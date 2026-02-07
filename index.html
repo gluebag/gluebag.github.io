@@ -1,0 +1,687 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Telecom Wrangler</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bangers&family=Caveat:wght@700&family=Source+Code+Pro:wght@400;700&family=Permanent+Marker&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #0a0a0f;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    font-family: 'Source Code Pro', monospace;
+  }
+
+  .poster {
+    width: 750px;
+    min-height: 950px;
+    background: linear-gradient(170deg, #0d1117 0%, #161b22 40%, #0d1117 100%);
+    border: 3px solid #30363d;
+    border-radius: 12px;
+    position: relative;
+    overflow: hidden;
+    padding: 40px;
+  }
+
+  /* Scanline overlay */
+  .poster::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,255,65,0.015) 2px,
+      rgba(0,255,65,0.015) 4px
+    );
+    pointer-events: none;
+    z-index: 10;
+  }
+
+  /* Glowing border pulse */
+  .poster::after {
+    content: '';
+    position: absolute;
+    top: -2px; left: -2px; right: -2px; bottom: -2px;
+    background: linear-gradient(45deg, #ff6b35, #f7c948, #00ff41, #00b4d8, #ff6b35);
+    background-size: 400% 400%;
+    z-index: -1;
+    border-radius: 14px;
+    animation: borderGlow 6s ease infinite;
+    opacity: 0.6;
+  }
+
+  @keyframes borderGlow {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
+
+  .title-section {
+    text-align: center;
+    margin-bottom: 10px;
+  }
+
+  .subtitle {
+    font-family: 'Source Code Pro', monospace;
+    color: #00ff41;
+    font-size: 11px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    opacity: 0.7;
+    margin-bottom: 8px;
+  }
+
+  .main-title {
+    font-family: 'Bangers', cursive;
+    font-size: 52px;
+    color: #f0f6fc;
+    text-shadow: 0 0 30px rgba(255,107,53,0.5), 0 0 60px rgba(255,107,53,0.2);
+    line-height: 1;
+    letter-spacing: 3px;
+  }
+
+  .main-title span {
+    color: #ff6b35;
+  }
+
+  .tagline {
+    font-family: 'Caveat', cursive;
+    color: #f7c948;
+    font-size: 20px;
+    margin-top: 4px;
+    font-style: italic;
+  }
+
+  /* Character scene */
+  .scene {
+    position: relative;
+    height: 340px;
+    margin: 20px 0;
+  }
+
+  /* Desk */
+  .desk {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 500px;
+    height: 20px;
+    background: linear-gradient(180deg, #3a2a1a, #2a1a0a);
+    border-radius: 4px 4px 0 0;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+  }
+
+  .desk::after {
+    content: '';
+    position: absolute;
+    top: -3px;
+    left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, rgba(255,200,100,0.3), transparent);
+  }
+
+  /* Character body */
+  .character {
+    position: absolute;
+    bottom: 18px;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  /* Monitor array - the key visual */
+  .monitors {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 6px;
+    perspective: 600px;
+  }
+
+  .monitor {
+    width: 105px;
+    height: 75px;
+    background: #0d1117;
+    border: 2px solid #30363d;
+    border-radius: 4px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 0 15px rgba(0,180,216,0.15);
+  }
+
+  .monitor:nth-child(1) { transform: rotateY(15deg); }
+  .monitor:nth-child(2) { transform: rotateY(5deg); }
+  .monitor:nth-child(3) { transform: rotateY(0deg) scale(1.05); z-index: 2; }
+  .monitor:nth-child(4) { transform: rotateY(-5deg); }
+  .monitor:nth-child(5) { transform: rotateY(-15deg); }
+
+  .monitor-content {
+    padding: 4px;
+    font-size: 5.5px;
+    line-height: 1.3;
+    font-family: 'Source Code Pro', monospace;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  .monitor-content.php { color: #7B83EB; }
+  .monitor-content.go { color: #00ADD8; }
+  .monitor-content.terminal { color: #00ff41; }
+  .monitor-content.metrics { color: #f7c948; }
+  .monitor-content.fire { color: #ff6b35; }
+
+  .monitor-label {
+    position: absolute;
+    bottom: -16px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 7px;
+    color: #8b949e;
+    white-space: nowrap;
+    font-family: 'Source Code Pro', monospace;
+  }
+
+  /* Head/face */
+  .head {
+    position: absolute;
+    bottom: 120px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 5;
+  }
+
+  .face {
+    width: 70px;
+    height: 80px;
+    background: linear-gradient(180deg, #d4a574, #c4956a);
+    border-radius: 35px 35px 30px 30px;
+    position: relative;
+  }
+
+  .hair {
+    position: absolute;
+    top: -8px;
+    left: -5px;
+    right: -5px;
+    height: 35px;
+    background: #2a1a0a;
+    border-radius: 40px 40px 0 0;
+  }
+
+  .eye {
+    width: 8px;
+    height: 5px;
+    background: #fff;
+    border-radius: 50%;
+    position: absolute;
+    top: 30px;
+  }
+  .eye::after {
+    content: '';
+    width: 4px;
+    height: 4px;
+    background: #1a1a2e;
+    border-radius: 50%;
+    position: absolute;
+    top: 0.5px;
+    left: 2px;
+  }
+  .eye.left { left: 17px; }
+  .eye.right { right: 17px; }
+
+  /* Bags under eyes */
+  .eye-bag {
+    position: absolute;
+    top: 37px;
+    width: 12px;
+    height: 3px;
+    border-bottom: 1.5px solid rgba(100,60,40,0.4);
+    border-radius: 0 0 50% 50%;
+  }
+  .eye-bag.left { left: 15px; }
+  .eye-bag.right { right: 15px; }
+
+  .mouth {
+    position: absolute;
+    bottom: 18px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 14px;
+    height: 5px;
+    border-bottom: 2.5px solid #8b5e3c;
+    border-radius: 0 0 50% 50%;
+  }
+
+  /* Coffee cup in hand */
+  .coffee {
+    position: absolute;
+    bottom: 95px;
+    right: 90px;
+    z-index: 6;
+  }
+
+  .coffee-cup {
+    width: 22px;
+    height: 26px;
+    background: linear-gradient(180deg, #f5f5f5, #e0e0e0);
+    border-radius: 2px 2px 6px 6px;
+    position: relative;
+  }
+
+  .coffee-cup::before {
+    content: '☕';
+    font-size: 6px;
+    position: absolute;
+    top: 8px;
+    left: 5px;
+  }
+
+  .coffee-steam {
+    position: absolute;
+    top: -12px;
+    left: 5px;
+    font-size: 10px;
+    color: rgba(255,255,255,0.3);
+    animation: steam 2s ease-in-out infinite;
+  }
+
+  @keyframes steam {
+    0%, 100% { opacity: 0.2; transform: translateY(0); }
+    50% { opacity: 0.5; transform: translateY(-5px); }
+  }
+
+  /* Torso */
+  .torso {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90px;
+    height: 100px;
+    background: linear-gradient(180deg, #1a1a2e, #16213e);
+    border-radius: 20px 20px 0 0;
+    z-index: 3;
+  }
+
+  /* Arms reaching to keyboards */
+  .arm {
+    position: absolute;
+    bottom: 55px;
+    height: 12px;
+    background: #1a1a2e;
+    border-radius: 6px;
+    z-index: 4;
+  }
+  .arm.left {
+    left: 100px;
+    width: 140px;
+    transform: rotate(-5deg);
+  }
+  .arm.right {
+    right: 100px;
+    width: 140px;
+    transform: rotate(5deg);
+  }
+
+  /* Floating thought bubbles */
+  .thought-bubbles {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+  }
+
+  .bubble {
+    position: absolute;
+    background: rgba(13,17,23,0.9);
+    border: 1.5px solid;
+    border-radius: 12px;
+    padding: 6px 10px;
+    font-size: 9px;
+    font-family: 'Source Code Pro', monospace;
+    animation: float 4s ease-in-out infinite;
+    white-space: nowrap;
+  }
+
+  .bubble:nth-child(1) { top: 15px; left: 15px; border-color: #ff6b35; color: #ff6b35; animation-delay: 0s; }
+  .bubble:nth-child(2) { top: 45px; right: 10px; border-color: #00ff41; color: #00ff41; animation-delay: 0.5s; }
+  .bubble:nth-child(3) { top: 10px; right: 120px; border-color: #f7c948; color: #f7c948; animation-delay: 1s; }
+  .bubble:nth-child(4) { top: 65px; left: 30px; border-color: #00b4d8; color: #00b4d8; animation-delay: 1.5s; }
+  .bubble:nth-child(5) { top: 85px; right: 25px; border-color: #e05d7b; color: #e05d7b; animation-delay: 2s; }
+  .bubble:nth-child(6) { top: 40px; left: 160px; border-color: #7B83EB; color: #7B83EB; animation-delay: 0.8s; }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+  }
+
+  /* Stats section */
+  .stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 25px;
+  }
+
+  .stat-card {
+    background: rgba(22,27,34,0.8);
+    border: 1px solid #30363d;
+    border-radius: 8px;
+    padding: 12px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 3px;
+    height: 100%;
+  }
+
+  .stat-card:nth-child(1)::before { background: #ff6b35; }
+  .stat-card:nth-child(2)::before { background: #00ff41; }
+  .stat-card:nth-child(3)::before { background: #f7c948; }
+  .stat-card:nth-child(4)::before { background: #00b4d8; }
+
+  .stat-label {
+    font-size: 9px;
+    color: #8b949e;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 4px;
+  }
+
+  .stat-value {
+    font-family: 'Bangers', cursive;
+    font-size: 22px;
+    color: #f0f6fc;
+    line-height: 1.1;
+  }
+
+  .stat-detail {
+    font-size: 8.5px;
+    color: #6e7681;
+    margin-top: 2px;
+  }
+
+  /* Tech stack badges */
+  .tech-stack {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    justify-content: center;
+    margin-top: 20px;
+  }
+
+  .badge {
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 9px;
+    font-family: 'Source Code Pro', monospace;
+    font-weight: 700;
+    border: 1px solid;
+    position: relative;
+    animation: badgePulse 3s ease-in-out infinite;
+  }
+
+  .badge:nth-child(odd) { animation-delay: 0.5s; }
+
+  @keyframes badgePulse {
+    0%, 100% { opacity: 0.8; }
+    50% { opacity: 1; }
+  }
+
+  .badge.php { color: #7B83EB; border-color: #7B83EB; background: rgba(123,131,235,0.1); }
+  .badge.go { color: #00ADD8; border-color: #00ADD8; background: rgba(0,173,216,0.1); }
+  .badge.laravel { color: #FF2D20; border-color: #FF2D20; background: rgba(255,45,32,0.1); }
+  .badge.mysql { color: #00758F; border-color: #4479A1; background: rgba(68,121,161,0.1); }
+  .badge.redis { color: #DC382D; border-color: #DC382D; background: rgba(220,56,45,0.1); }
+  .badge.freeswitch { color: #47B247; border-color: #47B247; background: rgba(71,178,71,0.1); }
+  .badge.sip { color: #f7c948; border-color: #f7c948; background: rgba(247,201,72,0.1); }
+  .badge.haproxy { color: #00b4d8; border-color: #00b4d8; background: rgba(0,180,216,0.1); }
+  .badge.stripe { color: #635BFF; border-color: #635BFF; background: rgba(99,91,255,0.1); }
+  .badge.whisper { color: #74AA9C; border-color: #74AA9C; background: rgba(116,170,156,0.1); }
+
+  /* Bottom quote */
+  .bottom-quote {
+    text-align: center;
+    margin-top: 24px;
+    padding-top: 16px;
+    border-top: 1px solid #21262d;
+  }
+
+  .quote-text {
+    font-family: 'Caveat', cursive;
+    color: #8b949e;
+    font-size: 17px;
+    line-height: 1.4;
+  }
+
+  .quote-text em {
+    color: #ff6b35;
+    font-style: normal;
+  }
+
+  .brands {
+    margin-top: 12px;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    font-size: 10px;
+    color: #484f58;
+    font-family: 'Source Code Pro', monospace;
+    letter-spacing: 1px;
+  }
+
+  .brand-dot {
+    color: #30363d;
+  }
+
+  /* Blinking cursor on main monitor */
+  .cursor-blink {
+    animation: blink 1s step-end infinite;
+  }
+  @keyframes blink {
+    50% { opacity: 0; }
+  }
+
+  /* Fire emoji floating */
+  .fire-float {
+    position: absolute;
+    font-size: 14px;
+    animation: fireFloat 3s ease-in-out infinite;
+  }
+  @keyframes fireFloat {
+    0%, 100% { transform: translateY(0) scale(1); opacity: 0.7; }
+    50% { transform: translateY(-10px) scale(1.1); opacity: 1; }
+  }
+</style>
+</head>
+<body>
+<div class="poster">
+  <!-- Title -->
+  <div class="title-section">
+    <div class="subtitle">$ whoami</div>
+    <div class="main-title">THE <span>TELECOM</span> WRANGLER</div>
+    <div class="tagline">"1000 concurrent SIP sessions? Those are rookie numbers."</div>
+  </div>
+
+  <!-- Scene -->
+  <div class="scene">
+    <!-- Thought bubbles -->
+    <div class="thought-bubbles">
+      <div class="bubble">🔥 WHY IS PROD DOWN</div>
+      <div class="bubble">HAProxy 502 again?!</div>
+      <div class="bubble">⚡ need more GPUs</div>
+      <div class="bubble">PHP 7.2 compat 😤</div>
+      <div class="bubble">Redis OOM kill</div>
+      <div class="bubble">Stripe webhook 🤔</div>
+    </div>
+
+    <!-- Fire emojis -->
+    <div class="fire-float" style="bottom: 200px; left: 60px; animation-delay: 0s;">🔥</div>
+    <div class="fire-float" style="bottom: 220px; right: 70px; animation-delay: 1.5s;">🔥</div>
+
+    <!-- Head -->
+    <div class="head">
+      <div class="face">
+        <div class="hair"></div>
+        <div class="eye left"></div>
+        <div class="eye right"></div>
+        <div class="eye-bag left"></div>
+        <div class="eye-bag right"></div>
+        <div class="mouth"></div>
+      </div>
+    </div>
+
+    <!-- Torso -->
+    <div class="torso"></div>
+
+    <!-- Arms -->
+    <div class="arm left"></div>
+    <div class="arm right"></div>
+
+    <!-- Coffee -->
+    <div class="coffee">
+      <div class="coffee-cup"></div>
+      <div class="coffee-steam">~</div>
+    </div>
+
+    <!-- Monitor array -->
+    <div class="monitors">
+      <div class="monitor">
+        <div class="monitor-content terminal">
+          $ tail -f sip.log<br>
+          [WARN] 503 timeout<br>
+          [ERR] chan full<br>
+          [OK] 200 INVITE<br>
+          [OK] 200 INVITE<br>
+          [WARN] retry #3<br>
+          $ htop ██████ 98%
+        </div>
+        <div class="monitor-label">FreeSWITCH</div>
+      </div>
+      <div class="monitor">
+        <div class="monitor-content php">
+          &lt;?php<br>
+          Route::post('/hook',<br>
+          &nbsp;[CampaignCtrl,<br>
+          &nbsp;'processRVM']);<br>
+          // TODO: fix this<br>
+          // TODO: fix that<br>
+          // it works dont touch
+        </div>
+        <div class="monitor-label">Laravel</div>
+      </div>
+      <div class="monitor">
+        <div class="monitor-content go">
+          func main() {<br>
+          &nbsp;for i := 0; i < 1000; i++ {<br>
+          &nbsp;&nbsp;go sipCall(ch)<br>
+          &nbsp;}<br>
+          &nbsp;// concurrency goes<br>
+          &nbsp;// brrrrrrrrr<br>
+          }<span class="cursor-blink">█</span>
+        </div>
+        <div class="monitor-label">Go SIP Client</div>
+      </div>
+      <div class="monitor">
+        <div class="monitor-content metrics">
+          ┌─ CAMPAIGNS ─┐<br>
+          │ Active: 847  │<br>
+          │ Queue: 12.4M │<br>
+          │ CPS: ████ 94 │<br>
+          │ Fails: 0.3%  │<br>
+          │ $$$: ▲▲▲▲▲▲  │<br>
+          └──────────────┘
+        </div>
+        <div class="monitor-label">Metabase</div>
+      </div>
+      <div class="monitor">
+        <div class="monitor-content fire">
+          From: client@<br>
+          "our RVM campaign<br>
+          needs to go out<br>
+          RIGHT NOW can you<br>
+          push 5M drops by<br>
+          EOD??"<br>
+          <br>
+        </div>
+        <div class="monitor-label">Inbox (347)</div>
+      </div>
+    </div>
+
+    <!-- Desk -->
+    <div class="desk"></div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats">
+    <div class="stat-card">
+      <div class="stat-label">Concurrent Sessions</div>
+      <div class="stat-value">1,000+</div>
+      <div class="stat-detail">"Let me just bump that goroutine pool real quick"</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">White-Label Brands</div>
+      <div class="stat-value">∞ (ish)</div>
+      <div class="stat-detail">MCATexts · BestText · Kloudi · [redacted] · ...</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Databases Rows</div>
+      <div class="stat-value">Millions</div>
+      <div class="stat-detail">SELECT * FROM... just kidding, EXPLAIN ANALYZE</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Years of Code</div>
+      <div class="stat-value">18+</div>
+      <div class="stat-detail">Started before Go existed. Still fixing PHP.</div>
+    </div>
+  </div>
+
+  <!-- Tech stack -->
+  <div class="tech-stack">
+    <span class="badge php">PHP</span>
+    <span class="badge laravel">Laravel</span>
+    <span class="badge go">Golang</span>
+    <span class="badge mysql">MySQL</span>
+    <span class="badge redis">Redis</span>
+    <span class="badge freeswitch">FreeSWITCH</span>
+    <span class="badge sip">SIP/VoIP</span>
+    <span class="badge haproxy">HAProxy</span>
+    <span class="badge stripe">Stripe</span>
+    <span class="badge whisper">Whisper</span>
+  </div>
+
+  <!-- Bottom -->
+  <div class="bottom-quote">
+    <div class="quote-text">
+      Founder. Sole Engineer. Sysadmin. DBA. Support Desk.<br>
+      Dad of two. Husband. South Florida man.<br>
+      <em>Running an entire telecom empire from a home office</em><br>
+      one HAProxy reload at a time.
+    </div>
+    <div class="brands">
+      <span>ATTENTIVE DEVELOPMENT</span>
+      <span class="brand-dot">•</span>
+      <span>SOCKET SOFTWARE INC</span>
+    </div>
+  </div>
+</div>
+</body>
+</html>
